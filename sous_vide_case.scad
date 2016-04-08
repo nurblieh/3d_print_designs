@@ -16,7 +16,7 @@ module captive_m3nut_post(x, y, z, h) {
       cube([8, 8, h]);
       translate([4, 4, 0]) {
         // Hole for bolt shaft, below captive nut.
-        cylinder(h-4.5+xs, 1.6, 1.6, $fn=20);
+        cylinder(h-4.5+xs, r=1.6, $fn=20);
         // captive nut hex hole. 2mm extra height for material.
         translate([0, 0, h-(m3nut_h+2)]) {
           cylinder(h=(m3nut_h+2+xs), 
@@ -31,18 +31,18 @@ module captive_m4nut_post(x, y, z, h) {
   post_x = 9.5;
   nut_h = 2.9;
   nut_w = 7;  // flat-to-flat
-  hole_d = 4.3 + clr_off;
+  hole_d = 4.5;
   translate([x, y, z]) {
     difference() {
       cube([post_x, post_x, h]);
       translate([post_x/2, post_x/2, 0]) {
         // Hole for bolt shaft.
-        cylinder(h-4.5+xs, 
-                 hole_d/2, 
-                 hole_d/2, $fn=20);
+        cylinder(h=(h - 4.5 + xs), 
+                 d=(hole_d+clr_off), 
+                 $fn=20);
         // captive nut hex hole. 1mm extra height for material.
         translate([0, 0, h-(nut_h+1)]) {
-          cylinder(h=(nut_h+2+xs), 
+          cylinder(h=(nut_h + 2 + xs), 
                    r=(nut_w / 2 / cos(180 / 6) + (clr_off/2)), $fn=6);
         }
       }
@@ -56,26 +56,20 @@ module sous_vide_case() {
   body_z = 36.5;
   wall_thk = 3;
   lip_thk = 1.5;
-  // Back lip is smaller to line up with power port clips.
-  port_lip_thk = 1.0;  
+  // The port cut-outs have lips for the port clips to attach to.
+  port_lip_thk = 1.0;
+  port_lip_depth = 1.0;
 
   // Port cut-out dimensions
-  stc_1000_dim = [70, 
-                  0,
-                  28];
-  pwr_out_dim = [22, 
-                 0,
-                 22];
-  pwr_in_dim = [46.1, 
-                0,
-                27.5];
-  probe_dim = [4, 
-               0,
-               2];
+  stc_1000_dim = [70, 0, 28];  // [x, y, z]
+  pwr_out_dim = [26, 0, 22];
+  probe_dim = [4.5, 0, 2];
+  pwr_in_dim = [46.1, 0, 27.5];
+
   // Adjust dimensions so port is below lid and "punches" through.
-  function port_cutout(dim) = [dim[0] + (clr_off * 2), 
+  function port_cutout(dim) = [dim[0] + 2*clr_off, 
                                wall_thk + 2*xs,
-                               dim[2] + clr_off + lip_thk + xs];
+                               dim[2] + 2*clr_off + lip_thk + xs];
 
   // Center the object in view port, along x and y.
   translate([-(body_x/2), -(body_y/2), 0]) {
@@ -86,39 +80,39 @@ module sous_vide_case() {
         // case/lid lip.
         translate([lip_thk, lip_thk, lip_thk]) {
           cube([body_x-(2*lip_thk),
-                body_y-(lip_thk+port_lip_thk),
+                body_y-(2*lip_thk),
                 body_z-lip_thk]);
         }
       }
       
-      // Extrude interior
+      // Cut-out interior
       translate([wall_thk, wall_thk, wall_thk]) {
         cube([body_x - 2*wall_thk, //114
               body_y - 2*wall_thk, //156
               body_z]);
       }
       // STC-1000 hole
-      translate([(body_x-stc_1000_dim[0])/2,
+      translate([(body_x-stc_1000_dim[0])/2 - clr_off,
                  -xs, 
-                 body_z - (stc_1000_dim[2]+lip_thk)
+                 body_z - (stc_1000_dim[2]+lip_thk+2*clr_off)
                  ]) {
         cube(port_cutout(stc_1000_dim));
       }
 
       // Pwr out hole
-      translate([17, 
+      translate([16, 
                  body_y-wall_thk-xs, 
                  body_z-(pwr_out_dim[2]+lip_thk)]) {
         cube(port_cutout(pwr_out_dim));
         // lip for pwr out
-        translate([-port_lip_thk, 0, 0]) {
-          cube([port_cutout(pwr_out_dim)[0] + 2*port_lip_thk,
+        translate([-port_lip_depth, 0, 0]) {
+          cube([port_cutout(pwr_out_dim)[0] + 2*port_lip_depth,
                 wall_thk-port_lip_thk+xs,
                 port_cutout(pwr_out_dim)[2]]);
         }
       }
-      // probe wire hole
-      translate([45, 
+      // Probe wire hole
+      translate([47, 
                  body_y-wall_thk-xs, 
                  body_z-(probe_dim[2]+lip_thk) ]) {
         cube(port_cutout(probe_dim));
@@ -126,13 +120,13 @@ module sous_vide_case() {
       // Pwr in + switch hole
       translate([57, 
                  body_y-wall_thk-xs, 
-                 body_z-(pwr_in_dim[2]+lip_thk) ]) {
+                 body_z-(pwr_in_dim[2]+lip_thk+2*clr_off) ]) {
         cube(port_cutout(pwr_in_dim));
-        // 1 mm lip for in+switch.
-        translate([0, 0, -port_lip_thk]) {
+        // 1 mm bottom lip for pwr in+switch.
+        translate([0, 0, -(port_lip_depth+clr_off)]) {
           cube([port_cutout(pwr_in_dim)[0], 
                 wall_thk - port_lip_thk + xs, 
-                port_lip_thk + xs]);
+                port_lip_depth + clr_off + xs]);
         }
       }       
     } // end of case's difference()

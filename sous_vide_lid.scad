@@ -1,5 +1,10 @@
 // GLOBALS
+// Use this when cutting out to "punch through" faces.
+// Clears up rendering artifacts and non-2-manifold errors.
 xs = 1;
+// Extra space for part interaction.
+clr_off = 0.25;
+
 // m3 dimensions
 m3_post_sz = 8;
 m3_screw_head_h = 2.5;
@@ -9,10 +14,11 @@ m3_shaft_r = 3.2 / 2;
 // m4 dimensions
 m4_post_sz = 9.5;
 m4_screw_head_h = 3;
-m4_screw_head_r = 8 / 2;
-m4_shaft_r = 4.3 / 2;
+m4_screw_head_r = 9 / 2;
+m4_shaft_r = 4.5 / 2;
 
-// Switch here. (So lazy.)
+// Switch screw size here. (So lazy.) 
+// TODO: be less lazy.
 post_sz = m4_post_sz;
 screw_head_h = m4_screw_head_h;
 screw_head_r = m4_screw_head_r;
@@ -20,11 +26,14 @@ shaft_r = m4_shaft_r;
 
 module screw_hole(x, y, z, h) {
   translate([x, y, z]) {
+    // Center over the screw post.
     translate([post_sz/2, post_sz/2, -xs]) {
-      cylinder(h, shaft_r + .05, shaft_r + .05, $fn=20);
-      cylinder(screw_head_h + .1, 
-               screw_head_r + .05, 
-               shaft_r + .05, $fn=20);
+      cylinder(h, 
+               shaft_r + clr_off/2, 
+               shaft_r + clr_off/2, $fn=20);
+      cylinder(screw_head_h + clr_off, 
+               screw_head_r + clr_off/2, 
+               shaft_r + clr_off/2, $fn=20);
     }
   }
 }
@@ -34,9 +43,9 @@ module screw_post(x, y, z, h) {
     difference() {
       cube([post_sz, post_sz, h]);
       translate([post_sz/2, post_sz/2, -xs]) {
-        cylinder(h+2*xs, 
-                 shaft_r + .05, 
-                 shaft_r + .05, $fn=20);
+        cylinder(h + 2*xs, 
+                 shaft_r + clr_off/2, 
+                 shaft_r + clr_off/2, $fn=20);
         // Create a extra space for bolt head to sit flush.
 //        translate(0, 0, -xs) {
 //          cylinder(.1+xs, 
@@ -56,8 +65,6 @@ module sous_vide_lid() {
   lip_thk = 1.5;
   // Back lip is 1mm to better line up with power port lips.
   port_lip_thk = 1.0;  
-  // Extra space for part interaction.
-  clr_off = 0.1;
   translate([-(body_x/2), -(body_y/2), 0]) {
     difference() {
       // exterior

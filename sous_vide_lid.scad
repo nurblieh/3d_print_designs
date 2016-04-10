@@ -5,40 +5,62 @@ xs = 1;
 // Extra space for part interaction.
 clr_off = 0.25;
 
-// m3 dimensions
-m3_post_sz = 8;
-m3_screw_head_h = 2.5;
-m3_screw_head_r = 6 / 2;
-m3_shaft_r = 3.2 / 2;
+// Generates a tapered hole for a tapered screw of the desired metric size.
+module screw_hole(x, y, z, h, screw_spec) {
+  if (screw_spec == "m3") {
+    _screw_hole(x, y, z, h,
+                post_sz=8,
+                screw_head_h=2.5, screw_head_d=6,
+                shaft_d=3.4);
+  } else if (screw_spec == "m4") {
+    _screw_hole(x, y, z, h,
+                post_sz=9.5,
+                screw_head_h=3, screw_head_d=9,
+                shaft_d=4.5);
+  } else {
+    echo("This screw spec not implemented: ", screw_spec);
+  }
+}
 
-// m4 dimensions
-m4_post_sz = 9.5;
-m4_screw_head_h = 3;
-m4_screw_head_r = 9 / 2;
-m4_shaft_r = 4.5 / 2;
-
-// Switch screw size here. (So lazy.) 
-// TODO: be less lazy.
-post_sz = m4_post_sz;
-screw_head_h = m4_screw_head_h;
-screw_head_r = m4_screw_head_r;
-shaft_r = m4_shaft_r;
-
-module screw_hole(x, y, z, h) {
+// Private method, see screw_hole().
+module _screw_hole(x, y, z, h,
+                   post_sz,
+                   screw_head_h, screw_head_d,
+                   shaft_d) {
   translate([x, y, z]) {
     // Center over the screw post.
     translate([post_sz/2, post_sz/2, -xs]) {
+      // Screw shaft
       cylinder(h, 
-               shaft_r + clr_off/2, 
-               shaft_r + clr_off/2, $fn=20);
+               d=(shaft_d + clr_off), 
+               $fn=20);
+      // Screw head
       cylinder(screw_head_h + clr_off, 
-               screw_head_r + clr_off/2, 
-               shaft_r + clr_off/2, $fn=20);
+               d1=(screw_head_d + clr_off), 
+               d2=(shaft_d + clr_off), $fn=20);
     }
   }
 }
 
-module screw_post(x, y, z, h) {
+// Generate a post/mount location with a screw hole of the desired metric size.
+module screw_post(x, y, z, h, screw_spec) {
+  if (screw_spec == "m3") {
+    _screw_post(x, y, z, h,
+                post_sz=8,
+                shaft_d=3.4);
+  } else if (screw_spec == "m4") {
+    _screw_post(x, y, z, h,
+                post_sz=9.5,
+                shaft_d=4.5);
+  } else {
+    echo("This screw spec not implemented: ", screw_spec);
+  }
+}
+
+// Private method, see screw_post().
+module _screw_post(x, y, z, h,
+                   post_sz,
+                   shaft_d) {
   translate([x, y, z]) {
     difference() {
       cube([post_sz, post_sz, h]);

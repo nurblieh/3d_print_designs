@@ -45,7 +45,7 @@ _NUT_W   = 4;
 //   enum: index of desired screw dimension.
 // Returns:
 //   value or undef
-function _screw_dim_lookup(k, table, enum) =
+function _screw_dim_lookup(k, enum) =
   (
    let(ret=search([k], _screw_dims))
    len(ret) > 0 ? _screw_dims[ret[0]][1][enum] : undef
@@ -58,31 +58,31 @@ function _screw_dim_lookup(k, table, enum) =
 //   (float)
 function screw_head_d(spec) =
   (
-   _screw_dim_lookup(spec, _screw_dims, _HEAD_D)
+   _screw_dim_lookup(spec, _HEAD_D)
    );
 
 // See above function for docstring.
 function screw_head_h(spec) =
   (
-   _screw_dim_lookup(spec, _screw_dims, _HEAD_H)
+   _screw_dim_lookup(spec, _HEAD_H)
    );
 
 // See above function for docstring.
 function screw_shaft_d(spec) =
   (
-   _screw_dim_lookup(spec, _screw_dims, _SHAFT_D)
+   _screw_dim_lookup(spec, _SHAFT_D)
    );
 
 // See above function for docstring.
 function screw_nut_h(spec) =
   (
-   _screw_dim_lookup(spec, _screw_dims, _NUT_H)
+   _screw_dim_lookup(spec, _NUT_H)
    );
 
 // See above function for docstring.
 function screw_nut_w(spec) =
   (
-   _screw_dim_lookup(spec, _screw_dims, _NUT_W)
+   _screw_dim_lookup(spec, _NUT_W)
    );
 
 // Size of a cubical post to fit a given screw/nut.

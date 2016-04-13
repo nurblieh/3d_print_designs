@@ -1,15 +1,6 @@
+include <sous_vide_globals.scad>;
 include <screw_lib.scad>;
 use <sous_vide_lid.scad>;
-
-// Use this when cutting out to "punch through" faces.
-// Clears up rendering artifacts and non-2-manifold errors.
-xs = 1;
-// Clearance offset to account for the material "oozing" out.
-// Required if you have parts that fit together after printing.
-clr_off = 0.2;
-// Metric screw spec to use for lid mounting.
-screw_spec = "m4";
-
 
 module captive_nut_post(x, y, z, h, spec) {
   post_sz = screw_post_sz(spec);
@@ -21,133 +12,124 @@ module captive_nut_post(x, y, z, h, spec) {
       cube([post_sz, post_sz, h]);
       translate([post_sz/2, post_sz/2, 0]) {
         // Hole for bolt shaft.
-        cylinder(h=(h - 4.5 + xs), 
-                 d=(shaft_d + clr_off), 
+        cylinder(h=(h - 4.5 + XS),
+                 d=(shaft_d + OFFSET),
                  $fn=20);
         // captive nut hex hole. 1mm extra height for material.
         translate([0, 0, h-(nut_h+1)]) {
-          cylinder(h=(nut_h + 2 + xs), 
-                   r=(nut_w / 2 / cos(180 / 6) + (clr_off/2)), $fn=6);
+          cylinder(h=(nut_h + 2 + XS),
+                   r=(nut_w / 2 / cos(180 / 6) + (OFFSET/2)), $fn=6);
         }
       }
     }
   }
 }
 
-
 module sous_vide_case() {
-  body_x = 120;
-  body_y = 140;
-  body_z = 36.5;
-  wall_thk = 3;
-  lip_thk = 1.5;
-  // The port cut-outs have lips for the port clips to attach to.
-  port_lip_thk = 1.0;
-  port_lip_depth = 1.0;
-
   // Port cut-out dimensions
   stc_1000_dim = [70, 0, 28];  // [x, y, z]
   pwr_out_dim = [26, 0, 22];
   probe_dim = [4.5, 0, 2];
   pwr_in_dim = [46.1, 0, 27.5];
+  post_sz = screw_post_sz(SCREW_SPEC);
 
   // Adjust dimensions so port is below lid and "punches" through.
-  function port_cutout(dim) = [dim[0] + 2*clr_off, 
-                               wall_thk + 2*xs,
-                               dim[2] + 2*clr_off + lip_thk + xs];
+  function port_cutout(dim) = [dim[0] + 2*OFFSET,
+                               WALL_THK + 2*XS,
+                               dim[2] + 2*OFFSET + LIP_THK + XS];
 
   // Center the object in view port, along x and y.
-  translate([-(body_x/2), -(body_y/2), 0]) {
+  translate([-(BODY_X/2), -(BODY_Y/2), 0]) {
     difference() {
       // Case body
       union() {
-        cube([body_x, body_y, (body_z - lip_thk)]);
+        cube([BODY_X, BODY_Y, (BODY_Z - LIP_THK)]);
         // case/lid lip.
-        translate([lip_thk, lip_thk, lip_thk]) {
-          cube([body_x-(2*lip_thk),
-                body_y-(2*lip_thk),
-                body_z-lip_thk]);
+        translate([LIP_THK, LIP_THK, LIP_THK]) {
+          cube([BODY_X-(2*LIP_THK),
+                BODY_Y-(2*LIP_THK),
+                BODY_Z-LIP_THK]);
         }
       }
-      
+
       // Cut-out interior
-      translate([wall_thk, wall_thk, wall_thk]) {
-        cube([body_x - 2*wall_thk, //114
-              body_y - 2*wall_thk, //156
-              body_z]);
+      translate([WALL_THK, WALL_THK, WALL_THK]) {
+        cube([BODY_X - 2*WALL_THK, //114
+              BODY_Y - 2*WALL_THK, //156
+              BODY_Z]);
       }
       // STC-1000 hole
-      translate([(body_x-stc_1000_dim[0])/2 - clr_off,
-                 -xs, 
-                 body_z - (stc_1000_dim[2]+lip_thk+2*clr_off)
+      translate([(BODY_X-stc_1000_dim[0])/2 - OFFSET,
+                 -XS,
+                 BODY_Z - (stc_1000_dim[2]+LIP_THK+2*OFFSET)
                  ]) {
         cube(port_cutout(stc_1000_dim));
       }
 
       // Pwr out hole
-      translate([16, 
-                 body_y-wall_thk-xs, 
-                 body_z-(pwr_out_dim[2]+lip_thk)]) {
+      translate([16,
+                 BODY_Y-WALL_THK-XS,
+                 BODY_Z-(pwr_out_dim[2]+LIP_THK)]) {
         cube(port_cutout(pwr_out_dim));
         // lip for pwr out
-        translate([-port_lip_depth, 0, 0]) {
-          cube([port_cutout(pwr_out_dim)[0] + 2*port_lip_depth,
-                wall_thk-port_lip_thk+xs,
+        translate([-PORT_LIP_DEPTH, 0, 0]) {
+          cube([port_cutout(pwr_out_dim)[0] + 2*PORT_LIP_DEPTH,
+                WALL_THK-PORT_LIP_THK+XS,
                 port_cutout(pwr_out_dim)[2]]);
         }
       }
       // Probe wire hole
-      translate([47, 
-                 body_y-wall_thk-xs, 
-                 body_z-(probe_dim[2]+lip_thk) ]) {
+      translate([47,
+                 BODY_Y-WALL_THK-XS,
+                 BODY_Z-(probe_dim[2]+LIP_THK) ]) {
         cube(port_cutout(probe_dim));
       }
       // Pwr in + switch hole
-      translate([57, 
-                 body_y-wall_thk-xs, 
-                 body_z-(pwr_in_dim[2]+lip_thk+2*clr_off) ]) {
+      translate([57,
+                 BODY_Y-WALL_THK-XS,
+                 BODY_Z-(pwr_in_dim[2]+LIP_THK+2*OFFSET) ]) {
         cube(port_cutout(pwr_in_dim));
         // 1 mm bottom lip for pwr in+switch.
-        translate([0, 0, -(port_lip_depth+clr_off)]) {
-          cube([port_cutout(pwr_in_dim)[0], 
-                wall_thk - port_lip_thk + xs, 
-                port_lip_depth + clr_off + xs]);
+        translate([0, 0, -(PORT_LIP_DEPTH+OFFSET)]) {
+          cube([port_cutout(pwr_in_dim)[0],
+                WALL_THK - PORT_LIP_THK + XS,
+                PORT_LIP_DEPTH + OFFSET + XS]);
         }
-      }       
-    } // end of case's difference()
+      }
+    } // END OF CASE'S DIFFERENCE()
     // Lid mounting posts.
-    captive_nut_post(x=wall_thk, 
-                     y=wall_thk, 
-                     z=wall_thk, 
-                     h=body_z - wall_thk,
-                     spec=screw_spec);
-    captive_nut_post(x=body_x - wall_thk - 9.5, 
-                     y=wall_thk, 
-                     z=wall_thk, 
-                     h=body_z - wall_thk,
-                     spec=screw_spec);
-    captive_nut_post(x=wall_thk, 
-                     y=body_y - wall_thk - 9.5, 
-                     z=wall_thk, 
-                     h=body_z - wall_thk,
-                     spec=screw_spec);
-    captive_nut_post(x=body_x - wall_thk - 9.5, 
-                     y=body_y - wall_thk - 9.5, 
-                     z=wall_thk, 
-                     h=body_z - wall_thk,
-                     spec=screw_spec);
+    captive_nut_post(x=WALL_THK,
+                     y=WALL_THK,
+                     z=WALL_THK,
+                     h=BODY_Z - WALL_THK,
+                     spec=SCREW_SPEC);
+    captive_nut_post(x=BODY_X - WALL_THK - post_sz,
+                     y=WALL_THK,
+                     z=WALL_THK,
+                     h=BODY_Z - WALL_THK,
+                     spec=SCREW_SPEC);
+    captive_nut_post(x=WALL_THK,
+                     y=BODY_Y - WALL_THK - post_sz,
+                     z=WALL_THK,
+                     h=BODY_Z - WALL_THK,
+                     spec=SCREW_SPEC);
+    captive_nut_post(x=BODY_X - WALL_THK - post_sz,
+                     y=BODY_Y - WALL_THK - post_sz,
+                     z=WALL_THK,
+                     h=BODY_Z - WALL_THK,
+                     spec=SCREW_SPEC);
 
     // Supporting interior walls
     // back divider
-    translate([52, body_y-32-wall_thk, 3]) {
+    translate([52, BODY_Y-32-WALL_THK, 3]) {
       cube([3, 32, 33.5]);
     }
     // side flanges
-    translate([wall_thk, 85, wall_thk]) {
-      cube([15, wall_thk, body_z-wall_thk]);
+    translate([WALL_THK, 85, WALL_THK]) {
+      cube([15, WALL_THK, BODY_Z-WALL_THK]);
     }
-    translate([body_x-wall_thk-15, 85, wall_thk]) {
-      cube([15, wall_thk, body_z-wall_thk]);
+    translate([BODY_X-WALL_THK-15, 85, WALL_THK]) {
+      cube([15, WALL_THK, BODY_Z-WALL_THK]);
     }
   } // view-port translation.
 }

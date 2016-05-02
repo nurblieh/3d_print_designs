@@ -13,7 +13,7 @@
 // If you add any screws, be sure to follow the field
 // ordering.
 // Head dimensions are for flat head screws I had on hand.
-// Each mfg will be difference. An example set of specs,
+// Each mfg will be different. An example set of specs,
 // https://www.fastenal.com/content/product_specifications/M.FHSCS.10.9.BO.pdf
 //
 // If OpenSCAD implements a hash table (dictionary)

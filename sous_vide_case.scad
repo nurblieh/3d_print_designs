@@ -28,7 +28,7 @@ module captive_nut_post(x, y, z, h, spec) {
 module sous_vide_case() {
   // Port cut-out dimensions
   stc_1000_dim = [70, 0, 28];  // [x, y, z]
-  pwr_out_dim = [26, 0, 22];
+  pwr_out_dim = [24, 0, 22];
   probe_dim = [4.5, 0, 2];
   pwr_in_dim = [46.1, 0, 27.5];
   post_sz = screw_post_sz(SCREW_SPEC);
@@ -67,7 +67,7 @@ module sous_vide_case() {
       }
 
       // Pwr out hole
-      translate([16,
+      translate([17,
                  BODY_Y-WALL_THK-XS,
                  BODY_Z-(pwr_out_dim[2]+LIP_THK)]) {
         cube(port_cutout(pwr_out_dim));

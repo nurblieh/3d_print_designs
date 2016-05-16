@@ -18,7 +18,7 @@ module captive_nut_post(x, y, z, h, spec) {
         // captive nut hex hole. 1mm extra height for material.
         translate([0, 0, h-(nut_h+1)]) {
           cylinder(h=(nut_h + 2 + XS),
-                   r=(nut_w / 2 / cos(180 / 6) + (OFFSET/2)), $fn=6);
+                   r=(nut_w / 2 / cos(180 / 6) + OFFSET), $fn=6);
         }
       }
     }

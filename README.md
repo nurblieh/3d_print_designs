@@ -5,8 +5,10 @@ An OpenSCAD model of a case and lid for my homemade sous-vide device.
 
 This specific design is unlikely to be useful for anyone else, but may provide as a general example.
 
-A description of the device's innards are available at my friend's site, http://fab.cba.mit.edu/classes/863.14/people/palash_nandy/sous_vide.html .
+I posted a write-up for this project here,
+https://medium.com/@nurblieh/the-30-sous-vide-machine-50d1dee6585d
 
+Note that I didn't cover the 3D model details. That may came with a later post.
 
 ## screw_lib
 A small OpenSCAD library which exposes some critical metric screw dimensions via function calls.
